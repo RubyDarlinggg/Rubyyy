@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Anything Goes 3D Portfolio</title>
+  <style>
+    html, body { height: 100%; margin: 0; }
+    body { overflow: hidden; }
+    #starfield {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw; height: 100vh;
+      z-index: 0;
+      pointer-events: none;
+    }
+    #header {
+      position: absolute; 
+      top: 0; left: 0; width: 100vw;
+      height: 56px;
+      background: rgba(33,33,66,0.65);
+      color: #fff;
+      font-family: 'Segoe UI', Arial, sans-serif;
+      font-size: 1.5rem;
+      font-weight: bold;
+      letter-spacing: 2px;
+      display: flex; align-items: center; justify-content: center;
+      z-index: 20;
+      box-shadow: 0 2px 12px #0007;
+      border-bottom: 2px solid #5f6fff;
+    }
+    #footer {
+      position: absolute;
+      bottom: 0; left: 0; width: 100vw;
+      height: 44px;
+      background: rgba(33,33,66,0.65);
+      color: #fff;
+      font-family: 'Segoe UI', Arial, sans-serif;
+      font-size: 1rem;
+      letter-spacing: 1px;
+      display: flex; align-items: center; justify-content: center;
+      z-index: 20;
+      box-shadow: 0 -2px 12px #0007;
+      border-top: 2px solid #5f6fff;
+    }
+    #overlay {
+      position: absolute; top: 70px; left: 50%; transform: translateX(-50%);
+      color: #fff; font-size: 2.5rem; z-index: 10;
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background: rgba(33,33,66,0.28); padding: 12px 32px; border-radius: 16px;
+      letter-spacing: 1px; box-shadow: 0 2px 16px #0008;
+      animation: floatText 3s infinite alternate ease-in-out;
+    }
+    @keyframes floatText {
+      0% { transform: translateX(-50%) translateY(0); }
+      100% { transform: translateX(-50%) translateY(15px); }
+    }
+    .project-label {
+      position: absolute;
+      color: #222;
+      background: #fff;
+      font-family: 'Segoe UI', Arial, sans-serif;
+      font-size: 1rem;
+      padding: 8px 14px;
+      border-radius: 8px;
+      pointer-events: none;
+      z-index: 15;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.17);
+      min-width: 160px;
+      max-width: 260px;
+      text-align: left;
+      transform: translate(-50%, -110%);
+      display: none;
+      transition: opacity 0.1s;
+      opacity: 0.97;
+    }
+    .project-label a {
+      color: #5f6fff;
+      text-decoration: none;
+      font-weight: bold;
+    }
+    .project-label a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="starfield"></canvas>
+  <div id="header">🚀 RubyDarlinggg's Portfolio</div>
+  <div id="overlay">✨ Anything Goes 3D Portfolio ✨</div>
+  <div id="footer">© 2025 RubyDarlinggg &nbsp;|&nbsp; Contact: <a href="mailto:youremail@example.com" style="color:#5f6fff;">youremail@example.com</a></div>
+  <div id="label" class="project-label"></div>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.155.0/build/three.min.js"></script>
+  <script>
+    // ---- Starfield Canvas ----
+    const starCanvas = document.getElementById('starfield');
+    const ctx = starCanvas.getContext('2d');
+    let stars = [];
+    function resizeStars() {
+      starCanvas.width = window.innerWidth;
+      starCanvas.height = window.innerHeight;
+      stars = [];
+      for(let i=0; i<220; i++) {
+        stars.push({
+          x: Math.random() * starCanvas.width,
+          y: Math.random() * starCanvas.height,
+          r: Math.random() * 1.2 + 0.3,
+          s: Math.random() * 0.6 + 0.2
+        });
+      }
+    }
+    resizeStars();
+    window.addEventListener('resize', resizeStars);
+
+    function animateStars() {
+      ctx.clearRect(0,0,starCanvas.width,starCanvas.height);
+      for(const star of stars) {
+        ctx.beginPath();
+        ctx.arc(star.x, star.y, star.r, 0, 2*Math.PI);
+        ctx.fillStyle = 'rgba(255,255,255,0.85)';
+        ctx.fill();
+        star.x += star.s;
+        if(star.x > starCanvas.width) {
+          star.x = 0;
+          star.y = Math.random() * starCanvas.height;
+        }
+      }
+      requestAnimationFrame(animateStars);
+    }
+    animateStars();
+
+    // ---- Three.js 3D Portfolio ----
+    const projects = [
+      {
+        name: "Project Nova",
+        description: "Cosmic code explorer.",
+        url: "https://github.com/yourusername/project-nova",
+        color: 0xe63946,
+        image: "https://placehold.co/200x130/FFB6C1/222?text=Nova"
+      },
+      {
+        name: "Project Orbit",
+        description: "Mobile app in motion.",
+        url: "https://github.com/yourusername/project-orbit",
+        color: 0x5f6fff,
+        image: "https://placehold.co/200x130/5f6fff/fff?text=Orbit"
+      },
+      {
+        name: "Project Stardust",
+        description: "Game development adventure.",
+        url: "https://github.com/yourusername/project-stardust",
+        color: 0xa8dadc,
+        image: "https://placehold.co/200x130/a8dadc/222?text=Stardust"
+      }
+    ];
+
+    const scene = new THREE.Scene();
+    scene.background = null;
+    const camera = new THREE.PerspectiveCamera(50, window.innerWidth/window.innerHeight, 0.1, 1000);
+    camera.position.z = 8;
+
+    const renderer = new THREE.WebGLRenderer({antialias:true, alpha:true});
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.domElement.style.position = 'absolute';
+    renderer.domElement.style.top = '0';
+    renderer.domElement.style.left = '0';
+    renderer.domElement.style.zIndex = '1';
+    document.body.appendChild(renderer.domElement);
+
+    // Lighting
+    scene.add(new THREE.AmbientLight(0xffffff, 0.6));
+    const dirLight = new THREE.DirectionalLight(0xffffff, 1.1);
+    dirLight.position.set(5,5,5);
+    scene.add(dirLight);
+
+    // Cubes/cards with images
+    const cubes = [];
+    const loader = new THREE.TextureLoader();
+    projects.forEach((project, i) => {
+      const geometry = new THREE.BoxGeometry(1.7, 1.2, 0.3, 8, 8, 8);
+      // Only the front face gets the image
+      const materials = [
+        new THREE.MeshStandardMaterial({color: project.color}), // right
+        new THREE.MeshStandardMaterial({color: project.color}), // left
+        new THREE.MeshStandardMaterial({color: project.color}), // top
+        new THREE.MeshStandardMaterial({color: project.color}), // bottom
+        new THREE.MeshStandardMaterial({color: project.color}), // back
+        new THREE.MeshStandardMaterial({color: project.color})  // front (will be replaced)
+      ];
+      loader.load(project.image, function(texture) {
+        materials[4] = new THREE.MeshStandardMaterial({ map: texture });
+      });
+      const cube = new THREE.Mesh(geometry, materials);
+      cube.position.x = i * 2.7 - 2.7;
+      cube.position.y = Math.sin(i + Date.now()/700) * 0.3;
+      cube.userData = project;
+      scene.add(cube);
+      cubes.push(cube);
+    });
+
+    // Add a glowing torus
+    const torusGeom = new THREE.TorusGeometry(0.7, 0.18, 16, 100);
+    const torusMat = new THREE.MeshStandardMaterial({
+      color: 0xf7e018, emissive: 0xf7e018, emissiveIntensity: 0.5, metalness: 0.8
+    });
+    const torus = new THREE.Mesh(torusGeom, torusMat);
+    torus.position.set(0, -2, 0);
+    scene.add(torus);
+
+    // Add a bouncing sphere
+    const sphereGeom = new THREE.SphereGeometry(0.5, 32, 32);
+    const sphereMat = new THREE.MeshStandardMaterial({color: 0x88ffcc, metalness: 0.3, roughness: 0.4});
+    const sphere = new THREE.Mesh(sphereGeom, sphereMat);
+    sphere.position.set(-3.5, 1.2, 0.5);
+    scene.add(sphere);
+
+    // Raycaster for interactivity
+    const raycaster = new THREE.Raycaster();
+    const mouse = new THREE.Vector2();
+    const label = document.getElementById('label');
+    let hoveredCube = null;
+
+    // Animate
+    function animate() {
+      requestAnimationFrame(animate);
+      const t = Date.now() * 0.001;
+      cubes.forEach((cube, idx) => {
+        cube.position.y = Math.sin(t + idx) * 0.33 + 0.2 * Math.pow(-1, idx);
+        if (cube === hoveredCube) {
+          cube.rotation.y += 0.025;
+          cube.rotation.x += 0.013;
+          cube.scale.set(1.15, 1.15, 1.15);
+        } else {
+          cube.rotation.y += 0.011;
+          cube.rotation.x += 0.007;
+          cube.scale.set(1, 1, 1);
+        }
+      });
+      torus.rotation.y += 0.012;
+      torus.rotation.x += 0.006;
+      sphere.position.y = 1.2 + Math.abs(Math.sin(t * 2)) * 1.1;
+      renderer.render(scene, camera);
+    }
+    animate();
+
+    // Handle resizing
+    window.addEventListener('resize', () => {
+      camera.aspect = window.innerWidth/window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      resizeStars();
+    });
+
+    // Mouse move for hover effect
+    window.addEventListener('mousemove', (event) => {
+      mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+      mouse.y = - (event.clientY / window.innerHeight) * 2 + 1;
+      raycaster.setFromCamera(mouse, camera);
+      const intersects = raycaster.intersectObjects(cubes);
+      if (intersects.length > 0) {
+        const cube = intersects[0].object;
+        hoveredCube = cube;
+        const { name, description, url, image } = cube.userData;
+        label.innerHTML = `
+          <img src="${image}" style="width:100%;border-radius:6px;margin-bottom:7px;">
+          <strong>${name}</strong><br>
+          <span>${description}</span><br>
+          <a href="${url}" target="_blank">View Project</a>
+        `;
+        label.style.left = `${event.clientX}px`;
+        label.style.top = `${event.clientY - 32}px`;
+        label.style.display = 'block';
+      } else {
+        hoveredCube = null;
+        label.style.display = 'none';
+      }
+    });
+
+    // Click to open project
+    window.addEventListener('click', (event) => {
+      mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+      mouse.y = - (event.clientY / window.innerHeight) * 2 + 1;
+      raycaster.setFromCamera(mouse, camera);
+      const intersects = raycaster.intersectObjects(cubes);
+      if (intersects.length > 0) {
+        window.open(intersects[0].object.userData.url, '_blank');
+      }
+    });
+
+    // Optional: animate camera in/out on scroll for fun parallax
+    window.addEventListener('wheel', (event) => {
+      camera.position.z += event.deltaY * 0.003;
+      camera.position.z = Math.max(6, Math.min(camera.position.z, 16));
+    });
+  </script>
+</body>
+</html>
